@@ -6,17 +6,17 @@
 using namespace celerite2::core;
 
 // Expose the function with C linkage for compatibility with ctypes
-extern "C" int compute_GPRotation(
-    int N, double* x, double* y, double* yerr, double* result, int kernel_type, int output_type,
-    double par1, double par2, double par3, double par4, double par5, double par6)
+extern "C" int compute_GP(
+    int N, double* x, double* y, double* diag_, double* result, int kernel_type, int output_type,
+    double par1, double par2, double par3, double par4, double par5)
 {
     // Map input arrays to Eigen vectors
     Eigen::VectorXd x_vec = Eigen::Map<Eigen::VectorXd>(x, N);
     Eigen::VectorXd y_vec = Eigen::Map<Eigen::VectorXd>(y, N);
-    Eigen::VectorXd yerr_vec = Eigen::Map<Eigen::VectorXd>(yerr, N);
+    Eigen::VectorXd diag_vec = Eigen::Map<Eigen::VectorXd>(diag_, N);
 
-    // Compute the diagonal (variance) from yerr
-    Eigen::VectorXd diag = yerr_vec.array().square();
+    // Compute the diagonal (variance) from diag_
+    Eigen::VectorXd diag = diag_vec.array();
 
     // Define RowMajorMatrix type for matrices that need to be row-major
     typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> RowMajorMatrix;
@@ -46,14 +46,11 @@ extern "C" int compute_GPRotation(
         std::tie(c, a, U, V) = kernel.get_celerite_matrices(x_vec, diag);
     } else {
         // RotationTerm: sigma, period, Q0, dQ, f, epsloc
-        // kernel = terms.RotationTerm(sigma=par1, period=par2, Q0=par3, dQ=par4, f=par5)
-        
         double sigma = par1;
         double period = par2;
         double Q0 = par3;
         double dQ = par4;
         double f = par5;
-        double epsloc = par6;
         
         // Term 1 parameters
         double amp = sigma * sigma / (1 + f);
@@ -182,7 +179,6 @@ extern "C" int compute_GPRotation(
             double Q0 = par3;
             double dQ = par4;
             double f = par5;
-            double epsloc = par6;
             
             // Term 1 parameters
             double amp = sigma * sigma / (1 + f);

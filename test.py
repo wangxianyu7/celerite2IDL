@@ -15,7 +15,7 @@ def celerite2_output(x, y, yerr, kernel_type, par1, par2, par3=0.0, par4=0.0, pa
     else:
         kernel = terms.RotationTerm(sigma=par1, period=par2, Q0=par3, dQ=par4, f=par5)
     gp = celerite2.GaussianProcess(kernel, mean=0.0)
-    gp.compute(x, yerr=yerr)
+    gp.compute(x, yerr=yerr**0.5)
     mu, var = gp.predict(y, return_var=True)
     log_likelihood = gp.log_likelihood(y)
     return log_likelihood, mu, var
@@ -24,8 +24,8 @@ def celerite2_output(x, y, yerr, kernel_type, par1, par2, par3=0.0, par4=0.0, pa
 lib = ctypes.CDLL('./CeleriteCore.so')
 
 # Define the argument and return types of the function
-lib.compute_GPRotation.restype = ctypes.c_int
-lib.compute_GPRotation.argtypes = [
+lib.compute_GP.restype = ctypes.c_int
+lib.compute_GP.argtypes = [
     ctypes.c_int,                      # N
     np.ctypeslib.ndpointer(dtype=np.double, ndim=1, flags='C_CONTIGUOUS'),  # x
     np.ctypeslib.ndpointer(dtype=np.double, ndim=1, flags='C_CONTIGUOUS'),  # y
@@ -34,7 +34,7 @@ lib.compute_GPRotation.argtypes = [
     ctypes.c_int,                      # kernel_type
     ctypes.c_int,                      # output_type
     ctypes.c_double, ctypes.c_double, ctypes.c_double,
-    ctypes.c_double, ctypes.c_double, ctypes.c_double  # par1 to par6
+    ctypes.c_double, ctypes.c_double  # par1 to par6
 ]
 
 # Example data
@@ -54,10 +54,9 @@ for i in range(5):
         par3 = 0.01
         par4 = 1e-5
         par5 = 0.0
-        par6 = 0
 
         # Call the function
-        status = lib.compute_GPRotation(
+        status = lib.compute_GP(
             ctypes.c_int(N),
             x,
             y,
@@ -69,11 +68,10 @@ for i in range(5):
             ctypes.c_double(par2),
             ctypes.c_double(par3),
             ctypes.c_double(par4),
-            ctypes.c_double(par5),
-            ctypes.c_double(par6)
+            ctypes.c_double(par5)
         )
 
-        log_likelihood_c2, mu_c2, var_c2 = celerite2_output(x, y, yerr, kernel_type, par1, par2, par3, par4, par5, par6)
+        log_likelihood_c2, mu_c2, var_c2 = celerite2_output(x, y, yerr, kernel_type, par1, par2, par3, par4, par5)
         # print("C++ Log-likelihood:", result[0], "vs Python:", log_likelihood_c2)
         if status == 0:
             # print("Function executed successfully.")

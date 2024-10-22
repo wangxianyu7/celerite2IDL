@@ -7,7 +7,12 @@ unzip Eigen.zip
 sudo cp -r eigen-3.4.0/Eigen /usr/local/include
 pip install celerite2
 ```
-
+### Compile it
+```
+g++ -std=c++17 -shared -o CeleriteCore.so -fPIC CeleriteCore.cpp -I/path_of_celerite_cpp_code -I/path_of_Eigen
+# for me, it is
+g++ -std=c++17 -shared -o CeleriteCore.so -fPIC CeleriteCore.cpp -I/workspaces/celerite2IDL/c++/include -I/usr/local/include/Eigen
+```
 
 _celerite_ is an algorithm for fast and scalable Gaussian Process (GP)
 Regression in one dimension and this library, _celerite2_ is a re-write of the
