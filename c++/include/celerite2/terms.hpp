@@ -227,6 +227,36 @@ class ComplexTerm : public Term<T, 2> {
   };
 };
 
+
+
+template <typename T>
+class Matern32Term : public Term<T, 2> {
+public:
+    typedef T Scalar;
+    constexpr static int Width = 2;
+    using typename Term<Scalar, 2>::Vector;
+    using typename Term<Scalar, 2>::LowRank;
+
+    // Constructor that takes sigma, rho, and optionally eps (with a default value of 0.01)
+    Matern32Term(const Scalar &sigma, const Scalar &rho, const Scalar &eps = 0.01) {
+        Vector ar, cr, ac(1), bc(1), cc(1), dc(1);
+        
+        Scalar w0 = std::sqrt(3.0) / rho;
+        Scalar S0 = sigma * sigma / w0;
+        
+        // Set coefficients
+        ac(0) = w0 * S0;
+        bc(0) = (w0 * w0 * S0) / eps;
+        cc(0) = w0;
+        dc(0) = eps;
+        
+        // Set the coefficients using the parent class method
+        this->set_coefficients(ar, cr, ac, bc, cc, dc);
+    }
+};
+
+
+
 /**
  * \class SHOTerm
  * A term representing a stochastically-driven, damped harmonic oscillator

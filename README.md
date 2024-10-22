@@ -1,5 +1,14 @@
 # celerite2
 
+### Install Eigen and celerite2
+```sh
+wget -O Eigen.zip https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.zip
+unzip Eigen.zip
+sudo cp -r eigen-3.4.0/Eigen /usr/local/include
+pip install celerite2
+```
+
+
 _celerite_ is an algorithm for fast and scalable Gaussian Process (GP)
 Regression in one dimension and this library, _celerite2_ is a re-write of the
 original [celerite project](https://celerite.readthedocs.io) to improve
