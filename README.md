@@ -24,7 +24,7 @@ For IDL:
 ```
 .com computeGP.pro
 .com GPTest.pro
-
+GPTest
 ```
 Verify the results with the Celerite2 Python version:
 
