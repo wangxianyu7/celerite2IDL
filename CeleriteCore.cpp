@@ -6,7 +6,7 @@
 using namespace celerite2::core;
 
 // Expose the function with C linkage for compatibility with ctypes
-extern "C" int compute_GP(
+extern "C" int computeGP(
     int N, double* x, double* y, double* diag_, double* result, int kernel_type, int output_type,
     double par1, double par2, double par3, double par4, double par5)
 {

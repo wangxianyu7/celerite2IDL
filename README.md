@@ -12,7 +12,26 @@ pip install celerite2
 g++ -std=c++17 -shared -o CeleriteCore.so -fPIC CeleriteCore.cpp -I/path_of_celerite_cpp_code -I/path_of_Eigen
 # for me, it is
 g++ -std=c++17 -shared -o CeleriteCore.so -fPIC CeleriteCore.cpp -I/workspaces/celerite2IDL/c++/include -I/usr/local/include/Eigen
+
+# with c_wrapper.c
+g++ -std=c++17 -o computeGP.so -shared -fPIC c_wrapper.c CeleriteCore.cpp -I/path_of_celerite_cpp_code -I/path_of_Eigen -I/path_of_idl_export.h
+# for me, it is
+g++ -std=c++17 -o computeGP.so -shared -fPIC c_wrapper.c CeleriteCore.cpp -I/N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/celerite2IDL/c++/include -I/usr/local/include/Eigen -I/N/project/spinOrbit_Angles/codes/nv5/idl90/external/include
+
 ```
+### Test
+For IDL:
+```
+.com computeGP.pro
+.com GPTest.pro
+
+```
+Verify the results with the Celerite2 Python version:
+
+```bash
+python GPTest.py
+```
+
 
 _celerite_ is an algorithm for fast and scalable Gaussian Process (GP)
 Regression in one dimension and this library, _celerite2_ is a re-write of the
